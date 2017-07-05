@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Raycaster</title>
+</head>
+<body>
+<canvas id="canvas">
+<canvas id="screen">
+<script type="text/javascript">
+
+
+const map = 
+[
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+[1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+[1, 0, 0, 0, 1, 1, 1, 1, 0, 1],
+[1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+[1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+]
+
+var canvas = document.getElementById('canvas')
+var ctx = canvas.getContext('2d')
+
+var screen = document.getElementById('screen')
+var stx = canvas.getContext('2d')
+
+const mapSize = map[0].length
+const scale = 30
+const pixelSize = mapSize * scale
+
+canvas.width = canvas.height = pixelSize
+
+screen.width = 600
+screen.height = 400
+
+window.onload = function() {
+  document.addEventListener('keydown', handleDown)
+  document.addEventListener('keyup', handleUp)
+  drawMap()
+  setInterval(gameLoop, 1000/30)
+}
+
+function drawMap() {
+  for (var y = 0; y < mapSize; y++) {
+    for (var x = 0; x < mapSize; x++) {
+      let block = map[y][x]
+      if (block === 1) {
+        ctx.fillStyle = "black"
+        ctx.fillRect(x * scale, y * scale, scale, scale)
+      }
+    } 
+  }
+}
+
+var player = {
+  x: 1.5,
+  y: 1.5,
+  dir: 0,
+  rot: 0,
+  size: scale / 4,
+
+  speed: 0,
+  moveSpeed: 0.10,
+  rotSpeed: 6 * Math.PI / 180,
+
+  stripWidth: 8,
+  fov: 60 * (Math.PI / 180),
+  numRays: Math.ceil(pixelSize / 8), 
+  viewDist: (pixelSize / 2) / Math.tan(60 * (Math.PI / 180) / 2),
+
+  
+  update: function() {
+    var moveStep = this.speed * this.moveSpeed
+    this.rot += this.dir * this.rotSpeed
+    var xx = this.x + Math.cos(this.rot) * moveStep
+    var yy = this.y + Math.sin(this.rot) * moveStep
+    this.checkCollision(xx, yy)
+    this.castRays()
+  },
+
+  checkCollision: function(xx, yy) {
+    if (xx < 0 || xx > mapSize || yy < 0 || yy > mapSize) {
+      return
+    }
+    if (map[Math.floor(yy + this.size/scale)][Math.floor(xx + this.size/scale)] !== 0 || map[Math.floor(yy)][Math.floor(xx)] !== 0) {
+      return
+    }
+    this.x = xx
+    this.y = yy
+  },
+
+  castRays: function() {
+    var stripI = 0
+    for (var i = 0; i < this.numRays; i++) {
+      var rayScreenPos = (-this.numRays / 2 + i) * this.stripWidth
+      var rayViewDistance = Math.sqrt(rayScreenPos*rayScreenPos + this.viewDist*this.viewDist)
+      var rayAngle = Math.asin(rayScreenPos / rayViewDistance)
+      this.castSingleRay(this.rot + rayAngle, stripI++)
+    }
+  },
+
+  castSingleRay: function(rayAngle, stripI) {
+
+    var rayAngle = rayAngle % (Math.PI * 2)
+
+    if(rayAngle < 0) {
+      rayAngle += Math.PI * 2
+    }
+
+    var right = (rayAngle > Math.PI*2 * 0.75 || rayAngle < Math.PI*2 * 0.25)
+    var up = (rayAngle > Math.PI)
+
+    var angleSin = Math.sin(rayAngle)
+    var angleCos = Math.cos(rayAngle)
+
+    var dist = 0
+    var xhit = 0
+    var yhit = 0
+
+    var texturex
+    var wallx
+    var wally
+
+    var slope = angleSin / angleCos
+    var dx = right ? 1 : -1
+    var dy = dx * slope
+
+    var x = right ? Math.ceil(this.x) : Math.floor(this.x)
+    var y = this.y + (x - this.x) * slope
+
+    while(x >= 0 && x < mapSize && y >= 0 && y < mapSize) {
+      wallx = Math.floor(x + (right ? 0 : -1))
+      wally = Math.floor(y)
+      if(map[wally][wallx] === 1) {
+        var distx = x - this.x
+        var disty = y - this.y
+        dist = distx*distx + disty*disty
+
+        texturex = y % 1
+        if (!right) texturex = 1 - texturex
+        xhit = x 
+        yhit = y
+
+        break
+      }
+      x += dx 
+      y += dy
+    } 
+
+    slope = angleCos / angleSin
+    dy = up ? -1 : 1
+    dx = dy * slope
+
+    y = up ? Math.floor(this.y) : Math.ceil(this.y)
+    x = this.x + (y - this.y) * slope
+
+    while(x >= 0 && x < mapSize && y >= 0 && y < mapSize) {
+      wally = Math.floor(y + (up ? -1 : 0))
+      wallx = Math.floor(x)
+      if(map[wally][wallx] === 1) {
+        var distx = x - this.x
+        var disty = y - this.y
+        var blockdist = distx*distx + disty*disty
+
+        if(!dist || blockdist < dist) {
+          dist = blockdist
+          xhit = x 
+          yhit = y
+          texturex = x % 1
+        
+          if (up) texturex = 1 - texturex
+        }
+        break
+      }
+      x += dx 
+      y += dy
+    } 
+    
+    if(dist) {
+      this.drawRay(xhit, yhit)
+    }
+
+  },
+
+  drawRay: function(x, y) {
+    ctx.strokeStyle = 'green'
+    ctx.beginPath()
+    ctx.moveTo(this.x * scale + this.size / 2 , this.y * scale + this.size/2)
+    ctx.lineTo(x * scale, y * scale)
+    ctx.closePath()
+    ctx.stroke()
+  },
+
+  render: function() {
+    // console.log(this.x, this.y)
+    ctx.fillStyle = "red"
+    ctx.fillRect(this.x * scale, this.y * scale, this.size, this.size)
+    // ctx.beginPath()
+    // ctx.moveTo(this.x * scale + this.size / 2 , this.y * scale + this.size/2)
+    // ctx.lineTo(this.x * scale + Math.cos(this.rot) * scale, this.y * scale + Math.sin(this.rot) * scale)
+    // ctx.stroke()
+  }
+
+
+}
+
+function handleDown(e) {
+  switch (e.keyCode) {
+    case 38:
+      player.speed = 1
+      break
+    case 40:
+      player.speed = -1
+      break
+    case 37:
+      player.dir = -1
+      break
+    case 39:
+      player.dir = 1
+      break
+  }
+}
+
+function handleUp(e) {
+  switch (e.keyCode) {
+    case 38:
+      player.speed = 0
+      break
+    case 40:
+      player.speed = 0
+      break
+    case 37:
+      player.dir = 0
+      break
+    case 39:
+      player.dir = 0
+      break
+  }
+}
+
+function gameLoop() {
+  update()
+  render() 
+}
+
+function update() {
+  ctx.clearRect(0, 0, pixelSize, pixelSize)
+  drawMap()
+  player.update()
+}
+
+function render() {
+  player.render()
+}
+
+
+
+</script>
+</body>
+</html>
