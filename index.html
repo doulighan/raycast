@@ -8,257 +8,281 @@
 <canvas id="screen">
 <script type="text/javascript">
 
-
-const map = 
-[
-[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 1, 1, 1, 1, 0, 1],
-[1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-[1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-[1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-]
-
-var canvas = document.getElementById('canvas')
-var ctx = canvas.getContext('2d')
-
-var screen = document.getElementById('screen')
-var stx = canvas.getContext('2d')
-
-const mapSize = map[0].length
-const scale = 30
-const pixelSize = mapSize * scale
-
-canvas.width = canvas.height = pixelSize
-
-screen.width = 600
-screen.height = 400
-
 window.onload = function() {
-  document.addEventListener('keydown', handleDown)
-  document.addEventListener('keyup', handleUp)
-  drawMap()
-  setInterval(gameLoop, 1000/30)
+  const app = new App
+  setInterval(app.gameLoop, 1000/30)
 }
 
-function drawMap() {
-  for (var y = 0; y < mapSize; y++) {
-    for (var x = 0; x < mapSize; x++) {
-      let block = map[y][x]
-      if (block === 1) {
-        ctx.fillStyle = "black"
-        ctx.fillRect(x * scale, y * scale, scale, scale)
+class App {
+  constructor() {
+    this.canvas = new Canvas
+    this.screen = new Screen
+    this.player = this.canvas.player
+
+    document.addEventListener('keyup', this.handleUp.bind(this))
+    document.addEventListener('keydown', this.handleDown.bind(this))
+
+    this.gameLoop = this.gameLoop.bind(this)
+  }
+
+  handleDown(event) {
+    switch (event.keyCode) {
+      case 38:
+        this.player.speed = 1
+        break
+      case 40:
+        this.player.speed = -1
+        break
+      case 37:
+        this.player.dir = -1
+        break
+      case 39:
+        this.player.dir = 1
+        break
+    }
+  }
+
+  handleUp(event) {
+    if (event.keyCode === 38 || event.keyCode === 40) {
+      this.player.speed = 0
+    } else if (event.keyCode === 37 || event.keyCode === 39) {
+      this.player.dir = 0
+    }
+  }
+
+  gameLoop() {
+    this.canvas.update()
+    this.player.render()
+    this.player.update()
+  }
+
+}
+
+class Canvas {
+  constructor() {
+    this.canvas = document.getElementById('canvas')
+    this.ctx = this.canvas.getContext('2d')
+
+    this.mapMap = ([
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 1, 1, 1, 0, 1],
+      [1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+      [1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    ])
+
+    this.mapDim = this.mapMap[0].length
+
+    this.scale = 30
+    this.pixelSize = this.mapDim * this.scale
+
+    this.setCanvas()
+
+    this.player = new Player(this)
+  }
+
+  setCanvas() {
+    this.canvas.width = this.pixelSize
+    this.canvas.height = this.pixelSize
+  }
+
+  drawMap() {
+    for (let y = 0; y < this.mapDim; y++) {
+      for (let x = 0; x < this.mapDim; x++) {
+        let block = this.mapMap[y][x]
+        if (block === 1) {
+          this.ctx.fillStyle = "black"
+          this.ctx.fillRect(x * this.scale, y * this.scale, this.scale, this.scale)
+        }
       }
-    } 
+    }
+  }
+
+  update() {
+    this.ctx.clearRect(0, 0, this.pixelSize, this.pixelSize)
+    this.drawMap()
+  }
+
+}
+
+class Screen {
+  constructor() {
+    this.screen = document.getElementById('screen')
+    this.stx = this.screen.getContext('2d')
+
+    this.setScreen()
+  }
+
+  setScreen() {
+    this.screen.width = 600
+    this.screen.height = 400
   }
 }
 
-var player = {
-  x: 1.5,
-  y: 1.5,
-  dir: 0,
-  rot: 0,
-  size: scale / 4,
+class Player {
+  constructor(canvas) {
+    this.canvas = canvas
+    this.scale = canvas.scale
+    this.pixelSize = canvas.pixelSize
+    this.ctx = canvas.ctx
+    this.mapMap = canvas.mapMap
+    this.mapDim = canvas.mapDim
 
-  speed: 0,
-  moveSpeed: 0.10,
-  rotSpeed: 6 * Math.PI / 180,
+    this.x = 1.5
+    this.y = 1.5
+    this.dir = 0
+    this.rot = 0
+    this.size = this.scale / 4
 
-  stripWidth: 8,
-  fov: 60 * (Math.PI / 180),
-  numRays: Math.ceil(pixelSize / 8), 
-  viewDist: (pixelSize / 2) / Math.tan(60 * (Math.PI / 180) / 2),
+    this.speed = 0
+    this.moveSpeed = 0.10
+    this.rotSpeed = 6 * Math.PI / 180
 
-  
-  update: function() {
-    var moveStep = this.speed * this.moveSpeed
+    this.stripWidth = 8
+    this.fov = 60 * (Math.PI / 180)
+
+    this.numRays = Math.ceil(this.pixelSize / this.stripWidth)
+    this.viewDist = (this.pixelSize / 2) / Math.tan(this.fov / 2)
+  }
+
+  update() {
+    let step = this.speed * this.moveSpeed
     this.rot += this.dir * this.rotSpeed
-    var xx = this.x + Math.cos(this.rot) * moveStep
-    var yy = this.y + Math.sin(this.rot) * moveStep
+
+    let xx = this.x + Math.cos(this.rot) * step
+    let yy = this.y + Math.sin(this.rot) * step
+
     this.checkCollision(xx, yy)
     this.castRays()
-  },
+  }
 
-  checkCollision: function(xx, yy) {
-    if (xx < 0 || xx > mapSize || yy < 0 || yy > mapSize) {
+  checkCollision(xx, yy){
+    if (xx < 0 || xx > this.mapDim || yy < 0 || yy > this.mapDim) {
       return
     }
-    if (map[Math.floor(yy + this.size/scale)][Math.floor(xx + this.size/scale)] !== 0 || map[Math.floor(yy)][Math.floor(xx)] !== 0) {
+
+    if (this.mapMap[Math.floor(yy + this.size/this.scale)][Math.floor(xx + this.size/this.scale)] !== 0 || this.mapMap[Math.floor(yy)][Math.floor(xx)] !== 0) {
       return
     }
+
     this.x = xx
     this.y = yy
-  },
+  }
 
-  castRays: function() {
-    var stripI = 0
-    for (var i = 0; i < this.numRays; i++) {
-      var rayScreenPos = (-this.numRays / 2 + i) * this.stripWidth
-      var rayViewDistance = Math.sqrt(rayScreenPos*rayScreenPos + this.viewDist*this.viewDist)
-      var rayAngle = Math.asin(rayScreenPos / rayViewDistance)
-      this.castSingleRay(this.rot + rayAngle, stripI++)
+  castRays() {
+    for (let i = 0; i < this.numRays; i++) {
+      new Ray(this, i)
     }
-  },
+  }
 
-  castSingleRay: function(rayAngle, stripI) {
+  render() {
+    this.ctx.fillStyle = "red"
+    this.ctx.fillRect(this.x * this.scale, this.y * this.scale, this.size, this.size)
+  }
 
-    var rayAngle = rayAngle % (Math.PI * 2)
+}
 
-    if(rayAngle < 0) {
-      rayAngle += Math.PI * 2
+class Ray {
+  constructor(player, idx) {
+    this.player = player
+    this.scale = player.scale
+    this.size = player.size
+    this.ctx = player.ctx
+    this.mapDim = player.mapDim
+    this.mapMap = player.mapMap
+
+    this.screenPos = (-this.player.numRays / 2 + idx) * this.player.stripWidth
+    this.viewDist = Math.sqrt(Math.pow(this.screenPos, 2) + Math.pow(this.player.viewDist, 2))
+    this.angle = Math.asin(this.screenPos / this.viewDist)
+
+    this.xHit = 0
+    this.yHit = 0
+    this.dist = 0
+
+    this.cast(this.player.rot + this.angle)
+  }
+
+  cast(ang) {
+    let angMod = ang % (Math.PI * 2)
+    const angle = angMod < 0 ? angMod + Math.PI * 2 : angMod
+
+    const right = angle > Math.PI * 2 * 0.75 || angle < Math.PI * 2 * 0.25
+    const up = angle > Math.PI
+
+    this.checkHoriz(angle, right)
+    this.checkVert(angle, up)
+
+    if (this.dist) {
+      this.draw(this.xHit, this.yHit)
     }
+  }
 
-    var right = (rayAngle > Math.PI*2 * 0.75 || rayAngle < Math.PI*2 * 0.25)
-    var up = (rayAngle > Math.PI)
+  checkHoriz(angle, right) {
+    const slope = Math.sin(angle) / Math.cos(angle)
+    const dx = right ? 1 : -1
+    const dy = dx * slope
 
-    var angleSin = Math.sin(rayAngle)
-    var angleCos = Math.cos(rayAngle)
+    let x = right ? Math.ceil(this.player.x) : Math.floor(this.player.x)
+    let y = this.player.y + (x - this.player.x) * slope
 
-    var dist = 0
-    var xhit = 0
-    var yhit = 0
+    while (x >= 0 && x < this.mapDim && y >= 0 && y < this.mapDim) {
 
-    var texturex
-    var wallx
-    var wally
+      let mapX = x + (right ? 0 : -1)
+      let mapY = Math.floor(y)
 
-    var slope = angleSin / angleCos
-    var dx = right ? 1 : -1
-    var dy = dx * slope
-
-    var x = right ? Math.ceil(this.x) : Math.floor(this.x)
-    var y = this.y + (x - this.x) * slope
-
-    while(x >= 0 && x < mapSize && y >= 0 && y < mapSize) {
-      wallx = Math.floor(x + (right ? 0 : -1))
-      wally = Math.floor(y)
-      if(map[wally][wallx] === 1) {
-        var distx = x - this.x
-        var disty = y - this.y
-        dist = distx*distx + disty*disty
-
-        texturex = y % 1
-        if (!right) texturex = 1 - texturex
-        xhit = x 
-        yhit = y
-
+      if (this.mapMap[mapY][mapX] === 1) {
+        this.dist = Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2)
+        this.xHit = x
+        this.yHit = y
         break
       }
-      x += dx 
+      x += dx
       y += dy
-    } 
+    }
+  }
 
-    slope = angleCos / angleSin
-    dy = up ? -1 : 1
-    dx = dy * slope
+  checkVert(angle, up) {
+    const slope = Math.cos(angle) / Math.sin(angle)
+    const dy = up ? -1 : 1
+    const dx = dy * slope
 
-    y = up ? Math.floor(this.y) : Math.ceil(this.y)
-    x = this.x + (y - this.y) * slope
+    let y = up ? Math.floor(this.player.y) : Math.ceil(this.player.y)
+    let x = this.player.x + (y - this.player.y) * slope
 
-    while(x >= 0 && x < mapSize && y >= 0 && y < mapSize) {
-      wally = Math.floor(y + (up ? -1 : 0))
-      wallx = Math.floor(x)
-      if(map[wally][wallx] === 1) {
-        var distx = x - this.x
-        var disty = y - this.y
-        var blockdist = distx*distx + disty*disty
 
-        if(!dist || blockdist < dist) {
-          dist = blockdist
-          xhit = x 
-          yhit = y
-          texturex = x % 1
-        
-          if (up) texturex = 1 - texturex
+    while (x >= 0 && x < this.mapDim && y >= 0 && y < this.mapDim) {
+
+      let mapY = y + (up ? -1 : 0)
+      let mapX = Math.floor(x)
+
+      if (this.mapMap[mapY][mapX] === 1) {
+        let dist = Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2)
+        if (!this.dist || dist < this.dist) {
+          this.dist = dist
+          this.xHit = x
+          this.yHit = y
         }
         break
       }
-      x += dx 
+      x += dx
       y += dy
-    } 
-    
-    if(dist) {
-      this.drawRay(xhit, yhit)
     }
-
-  },
-
-  drawRay: function(x, y) {
-    ctx.strokeStyle = 'green'
-    ctx.beginPath()
-    ctx.moveTo(this.x * scale + this.size / 2 , this.y * scale + this.size/2)
-    ctx.lineTo(x * scale, y * scale)
-    ctx.closePath()
-    ctx.stroke()
-  },
-
-  render: function() {
-    // console.log(this.x, this.y)
-    ctx.fillStyle = "red"
-    ctx.fillRect(this.x * scale, this.y * scale, this.size, this.size)
-    // ctx.beginPath()
-    // ctx.moveTo(this.x * scale + this.size / 2 , this.y * scale + this.size/2)
-    // ctx.lineTo(this.x * scale + Math.cos(this.rot) * scale, this.y * scale + Math.sin(this.rot) * scale)
-    // ctx.stroke()
   }
 
-
-}
-
-function handleDown(e) {
-  switch (e.keyCode) {
-    case 38:
-      player.speed = 1
-      break
-    case 40:
-      player.speed = -1
-      break
-    case 37:
-      player.dir = -1
-      break
-    case 39:
-      player.dir = 1
-      break
+  draw(x, y) {
+    this.ctx.strokeStyle = 'green'
+    this.ctx.beginPath()
+    this.ctx.moveTo(this.player.x * this.scale + this.size / 2 , this.player.y * this.scale + this.size/2)
+    this.ctx.lineTo(x * this.scale, y * this.scale)
+    this.ctx.closePath()
+    this.ctx.stroke()
   }
 }
-
-function handleUp(e) {
-  switch (e.keyCode) {
-    case 38:
-      player.speed = 0
-      break
-    case 40:
-      player.speed = 0
-      break
-    case 37:
-      player.dir = 0
-      break
-    case 39:
-      player.dir = 0
-      break
-  }
-}
-
-function gameLoop() {
-  update()
-  render() 
-}
-
-function update() {
-  ctx.clearRect(0, 0, pixelSize, pixelSize)
-  drawMap()
-  player.update()
-}
-
-function render() {
-  player.render()
-}
-
-
 
 </script>
 </body>
