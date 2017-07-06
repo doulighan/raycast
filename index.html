@@ -4,8 +4,12 @@
   <title>Raycaster</title>
 </head>
 <body>
-<canvas id="canvas">
-<canvas id="screen">
+  <div>
+    <canvas id="screen">
+  </div>
+  <div>
+    <canvas id="canvas">
+  </div>
 <script type="text/javascript">
 
 window.onload = function() {
@@ -17,6 +21,7 @@ class App {
   constructor() {
     this.canvas = new Canvas
     this.screen = new Screen
+
     this.player = this.canvas.player
 
     document.addEventListener('keyup', this.handleUp.bind(this))
@@ -51,9 +56,8 @@ class App {
   }
 
   gameLoop() {
-    this.canvas.update()
-    this.player.render()
-    this.player.update()
+    this.canvas.render()
+    this.screen.render(this.player)
   }
 
 }
@@ -78,17 +82,13 @@ class Canvas {
 
     this.mapDim = this.matrix[0].length
 
-    this.scale = 30
+    this.scale = 10
     this.pixelSize = this.mapDim * this.scale
 
-    this.setCanvas()
-
-    this.player = new Player(this)
-  }
-
-  setCanvas() {
     this.canvas.width = this.pixelSize
     this.canvas.height = this.pixelSize
+
+    this.player = new Player(this)
   }
 
   drawMap() {
@@ -103,25 +103,12 @@ class Canvas {
     }
   }
 
-  update() {
+  render() {
     this.ctx.clearRect(0, 0, this.pixelSize, this.pixelSize)
     this.drawMap()
+    this.player.render()
   }
 
-}
-
-class Screen {
-  constructor() {
-    this.screen = document.getElementById('screen')
-    this.stx = this.screen.getContext('2d')
-
-    this.setScreen()
-  }
-
-  setScreen() {
-    this.screen.width = 600
-    this.screen.height = 400
-  }
 }
 
 class Player {
@@ -140,25 +127,16 @@ class Player {
     this.size = this.scale / 4
 
     this.speed = 0
-    this.moveSpeed = 0.10
+    this.moveSpeed = 0.05
     this.rotSpeed = 6 * Math.PI / 180
 
-    this.stripWidth = 8
+    this.stripWidth = 0.5
     this.fov = 60 * (Math.PI / 180)
 
     this.numRays = Math.ceil(this.pixelSize / this.stripWidth)
     this.viewDist = (this.pixelSize / 2) / Math.tan(this.fov / 2)
-  }
 
-  update() {
-    let step = this.speed * this.moveSpeed
-    this.rot += this.dir * this.rotSpeed
-
-    let xx = this.x + Math.cos(this.rot) * step
-    let yy = this.y + Math.sin(this.rot) * step
-
-    this.checkCollision(xx, yy)
-    this.castRays()
+    this.rays = []
   }
 
   checkCollision(xx, yy){
@@ -175,14 +153,24 @@ class Player {
   }
 
   castRays() {
+    this.rays = []
     for (let i = 0; i < this.numRays; i++) {
-      new Ray(this, i)
+      this.rays.push(new Ray(this, i))
     }
   }
 
   render() {
     this.ctx.fillStyle = "red"
     this.ctx.fillRect(this.x * this.scale, this.y * this.scale, this.size, this.size)
+
+    let step = this.speed * this.moveSpeed
+    this.rot += this.dir * this.rotSpeed
+
+    let xx = this.x + Math.cos(this.rot) * step
+    let yy = this.y + Math.sin(this.rot) * step
+
+    this.checkCollision(xx, yy)
+    this.castRays()
   }
 
 }
@@ -281,6 +269,61 @@ class Ray {
     this.ctx.lineTo(x * this.scale, y * this.scale)
     this.ctx.closePath()
     this.ctx.stroke()
+  }
+}
+
+class Screen {
+  constructor() {
+    this.screen = document.getElementById('screen')
+    this.stx = this.screen.getContext('2d')
+
+    this.screen.width = 600
+    this.screen.height = 400
+
+    this.width = this.screen.width
+    this.height = this.screen.height
+
+    this.minDist = 1
+
+    this.rayNum = null
+    this.sliceWidth = null
+  }
+
+  colHeight(dist) {
+    if (dist <= this.minDist) {
+      return this.height
+    } else {
+      return this.height / (.4 * dist)
+    }
+  }
+
+  color(dist) {
+    if (dist <= this.minDist) {
+      return 0
+    } else {
+      return (Math.floor(dist * 25) > 225) ? 225 : Math.floor(dist * 25)
+    }
+  }
+
+  render(player) {
+    this.rayNum = player.rays.length
+    this.sliceWidth = this.width / this.rayNum
+
+    this.stx.clearRect(0, 0, this.width, this.height)
+    player.rays.forEach((ray, idx) => this.renderSlice(ray, idx))
+  }
+
+  renderSlice(ray, idx) {
+    const height = this.colHeight(ray.dist)
+    const startX = idx * this.sliceWidth
+    const startY = (this.height - height) / 2
+    const endX = this.sliceWidth
+    const endY = height
+    const color = `rgb(${this.color(ray.dist)},${this.color(ray.dist)},${this.color(ray.dist)})`
+
+    this.stx.fillStyle = color
+    this.stx.fillRect(startX, startY, endX, endY)
+    console.log(color)
   }
 }
 
