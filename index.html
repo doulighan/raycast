@@ -63,7 +63,7 @@ class Canvas {
     this.canvas = document.getElementById('canvas')
     this.ctx = this.canvas.getContext('2d')
 
-    this.mapMap = ([
+    this.matrix = ([
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
       [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
@@ -76,7 +76,7 @@ class Canvas {
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ])
 
-    this.mapDim = this.mapMap[0].length
+    this.mapDim = this.matrix[0].length
 
     this.scale = 30
     this.pixelSize = this.mapDim * this.scale
@@ -94,7 +94,7 @@ class Canvas {
   drawMap() {
     for (let y = 0; y < this.mapDim; y++) {
       for (let x = 0; x < this.mapDim; x++) {
-        let block = this.mapMap[y][x]
+        let block = this.matrix[y][x]
         if (block === 1) {
           this.ctx.fillStyle = "black"
           this.ctx.fillRect(x * this.scale, y * this.scale, this.scale, this.scale)
@@ -130,7 +130,7 @@ class Player {
     this.scale = canvas.scale
     this.pixelSize = canvas.pixelSize
     this.ctx = canvas.ctx
-    this.mapMap = canvas.mapMap
+    this.matrix = canvas.matrix
     this.mapDim = canvas.mapDim
 
     this.x = 1.5
@@ -166,7 +166,7 @@ class Player {
       return
     }
 
-    if (this.mapMap[Math.floor(yy + this.size/this.scale)][Math.floor(xx + this.size/this.scale)] !== 0 || this.mapMap[Math.floor(yy)][Math.floor(xx)] !== 0) {
+    if (this.matrix[Math.floor(yy + this.size/this.scale)][Math.floor(xx + this.size/this.scale)] !== 0 || this.matrix[Math.floor(yy)][Math.floor(xx)] !== 0) {
       return
     }
 
@@ -194,7 +194,7 @@ class Ray {
     this.size = player.size
     this.ctx = player.ctx
     this.mapDim = player.mapDim
-    this.mapMap = player.mapMap
+    this.matrix = player.matrix
 
     this.screenPos = (-this.player.numRays / 2 + idx) * this.player.stripWidth
     this.viewDist = Math.sqrt(Math.pow(this.screenPos, 2) + Math.pow(this.player.viewDist, 2))
@@ -235,7 +235,7 @@ class Ray {
       let mapX = x + (right ? 0 : -1)
       let mapY = Math.floor(y)
 
-      if (this.mapMap[mapY][mapX] === 1) {
+      if (this.matrix[mapY][mapX] === 1) {
         this.dist = Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2)
         this.xHit = x
         this.yHit = y
@@ -260,7 +260,7 @@ class Ray {
       let mapY = y + (up ? -1 : 0)
       let mapX = Math.floor(x)
 
-      if (this.mapMap[mapY][mapX] === 1) {
+      if (this.matrix[mapY][mapX] === 1) {
         let dist = Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2)
         if (!this.dist || dist < this.dist) {
           this.dist = dist
