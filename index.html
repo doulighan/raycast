@@ -31,26 +31,28 @@ class App {
   }
 
   handleDown(event) {
+    event.preventDefault()
     switch (event.keyCode) {
-      case 38:
+      case 38 || 87:
         this.player.speed = 1
         break
-      case 40:
+      case 40 || 83:
         this.player.speed = -1
         break
-      case 37:
+      case 37 || 65:
         this.player.dir = -1
         break
-      case 39:
+      case 39 || 68:
         this.player.dir = 1
         break
     }
   }
 
   handleUp(event) {
-    if (event.keyCode === 38 || event.keyCode === 40) {
+    event.preventDefault()
+    if (event.keyCode === 38 || event.keyCode === 40 || event.keyCode === 87 || event.keyCode === 83) {
       this.player.speed = 0
-    } else if (event.keyCode === 37 || event.keyCode === 39) {
+    } else if (event.keyCode === 37 || event.keyCode === 39 || event.keyCode === 65 || event.keyCode === 68) {
       this.player.dir = 0
     }
   }
@@ -68,16 +70,26 @@ class Canvas {
     this.ctx = this.canvas.getContext('2d')
 
     this.matrix = ([
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 1, 1, 1, 1, 0, 1],
-      [1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-      [1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+      [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+      [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ])
 
     this.mapDim = this.matrix[0].length
@@ -128,10 +140,10 @@ class Player {
 
     this.speed = 0
     this.moveSpeed = 0.05
-    this.rotSpeed = 6 * Math.PI / 180
+    this.rotSpeed = 4 * Math.PI / 180
 
-    this.stripWidth = 0.5
-    this.fov = 60 * (Math.PI / 180)
+    this.stripWidth = .5
+    this.fov = 65 * (Math.PI / 180)
 
     this.numRays = Math.ceil(this.pixelSize / this.stripWidth)
     this.viewDist = (this.pixelSize / 2) / Math.tan(this.fov / 2)
@@ -224,7 +236,7 @@ class Ray {
       let mapY = Math.floor(y)
 
       if (this.matrix[mapY][mapX] === 1) {
-        this.dist = Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2)
+        this.dist = (Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2)) 
         this.xHit = x
         this.yHit = y
         break
@@ -251,7 +263,7 @@ class Ray {
       if (this.matrix[mapY][mapX] === 1) {
         let dist = Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2)
         if (!this.dist || dist < this.dist) {
-          this.dist = dist
+          this.dist = dist 
           this.xHit = x
           this.yHit = y
         }
@@ -277,8 +289,8 @@ class Screen {
     this.screen = document.getElementById('screen')
     this.stx = this.screen.getContext('2d')
 
-    this.screen.width = 600
-    this.screen.height = 400
+    this.screen.width = 1200
+    this.screen.height = 800
 
     this.width = this.screen.width
     this.height = this.screen.height
@@ -305,25 +317,34 @@ class Screen {
     }
   }
 
+  drawFloor() {
+    this.stx.fillStyle='#ADD8E6'
+    this.stx.fillRect(0, 0, this.width, this.height/2)
+    this.stx.fillStyle='rgb(180, 180, 180)'
+    this.stx.fillRect(0, this.height/2, this.width, this.height)
+  }
+
   render(player) {
     this.rayNum = player.rays.length
     this.sliceWidth = this.width / this.rayNum
 
     this.stx.clearRect(0, 0, this.width, this.height)
+    this.drawFloor()
+
     player.rays.forEach((ray, idx) => this.renderSlice(ray, idx))
   }
 
   renderSlice(ray, idx) {
+
     const height = this.colHeight(ray.dist)
     const startX = idx * this.sliceWidth
     const startY = (this.height - height) / 2
     const endX = this.sliceWidth
     const endY = height
-    const color = `rgb(${this.color(ray.dist)},${this.color(ray.dist)},${this.color(ray.dist)})`
+    const color = `rgb(100,100,${this.color(ray.dist)})`
 
     this.stx.fillStyle = color
     this.stx.fillRect(startX, startY, endX, endY)
-    console.log(color)
   }
 }
 
