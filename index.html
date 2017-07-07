@@ -141,7 +141,7 @@ class Player {
     this.speed = 0
     this.moveSpeed = 0.05
     this.rotSpeed = 4 * Math.PI / 180
-
+;
     this.stripWidth = .5
     this.fov = 65 * (Math.PI / 180)
 
@@ -301,11 +301,11 @@ class Screen {
     this.sliceWidth = null
   }
 
-  colHeight(dist) {
+  colHeight(dist, angle) {
     if (dist <= this.minDist) {
       return this.height
     } else {
-      return this.height / (.4 * dist)
+      return this.height / (Math.sqrt(dist) * Math.cos(angle))
     }
   }
 
@@ -336,7 +336,7 @@ class Screen {
 
   renderSlice(ray, idx) {
 
-    const height = this.colHeight(ray.dist)
+    const height = this.colHeight(ray.dist, ray.angle)
     const startX = idx * this.sliceWidth
     const startY = (this.height - height) / 2
     const endX = this.sliceWidth
