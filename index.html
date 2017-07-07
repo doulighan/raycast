@@ -45,6 +45,9 @@ class App {
       case 39 || 68:
         this.player.dir = 1
         break
+      case 16:
+        this.player.running()
+        break
     }
   }
 
@@ -54,6 +57,8 @@ class App {
       this.player.speed = 0
     } else if (event.keyCode === 37 || event.keyCode === 39 || event.keyCode === 65 || event.keyCode === 68) {
       this.player.dir = 0
+    } else if (event.keyCode === 16) {
+      this.player.walking()
     }
   }
 
@@ -143,12 +148,20 @@ class Player {
     this.rotSpeed = 4 * Math.PI / 180
 ;
     this.stripWidth = .5
-    this.fov = 65 * (Math.PI / 180)
+    this.fov = 80 * (Math.PI / 180)
 
     this.numRays = Math.ceil(this.pixelSize / this.stripWidth)
     this.viewDist = (this.pixelSize / 2) / Math.tan(this.fov / 2)
 
     this.rays = []
+  }
+
+  running() {
+    this.moveSpeed = 0.12
+  }
+
+  walking() {
+    this.moveSpeed = 0.05
   }
 
   checkCollision(xx, yy){
