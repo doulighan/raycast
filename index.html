@@ -76,23 +76,23 @@ class Canvas {
 
     this.matrix = ([
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-      [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-      [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
+      [1, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 2, 0, 0, 2, 0, 2, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+      [1, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1],
+      [1, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 1],
       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
     ])
@@ -111,10 +111,15 @@ class Canvas {
   drawMap() {
     for (let y = 0; y < this.mapDim; y++) {
       for (let x = 0; x < this.mapDim; x++) {
-        let block = this.matrix[y][x]
-        if (block === 1) {
+        switch (this.matrix[y][x]) {
+          case 1:
           this.ctx.fillStyle = "black"
           this.ctx.fillRect(x * this.scale, y * this.scale, this.scale, this.scale)
+          break
+          case 2:
+          this.ctx.fillStyle = "grey"
+          this.ctx.fillRect(x * this.scale, y * this.scale, this.scale, this.scale)
+          break
         }
       }
     }
@@ -216,6 +221,7 @@ class Ray {
     this.xHit = 0
     this.yHit = 0
     this.dist = 0
+    this.block = null
 
     this.cast(this.player.rot + this.angle)
   }
@@ -230,9 +236,7 @@ class Ray {
     this.checkHoriz(angle, right)
     this.checkVert(angle, up)
 
-    if (this.dist) {
-      this.draw(this.xHit, this.yHit)
-    }
+    this.draw(this.xHit, this.yHit)
   }
 
   checkHoriz(angle, right) {
@@ -248,8 +252,9 @@ class Ray {
       let mapX = x + (right ? 0 : -1)
       let mapY = Math.floor(y)
 
-      if (this.matrix[mapY][mapX] === 1) {
-        this.dist = (Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2)) 
+      if (this.matrix[mapY][mapX] !== 0) {
+        this.block = this.matrix[mapY][mapX]
+        this.dist = (Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2))
         this.xHit = x
         this.yHit = y
         break
@@ -273,10 +278,11 @@ class Ray {
       let mapY = y + (up ? -1 : 0)
       let mapX = Math.floor(x)
 
-      if (this.matrix[mapY][mapX] === 1) {
+      if (this.matrix[mapY][mapX] !== 0) {
         let dist = Math.pow(x - this.player.x, 2) + Math.pow(y - this.player.y, 2)
         if (!this.dist || dist < this.dist) {
-          this.dist = dist 
+          this.block = this.matrix[mapY][mapX]
+          this.dist = dist
           this.xHit = x
           this.yHit = y
         }
@@ -322,11 +328,24 @@ class Screen {
     }
   }
 
-  color(dist) {
-    if (dist <= this.minDist) {
-      return 0
-    } else {
-      return (Math.floor(dist * 25) > 225) ? 225 : Math.floor(dist * 25)
+  color(ray) {
+    switch (ray.block) {
+      case 1:
+      if (ray.dist <= this.minDist) {
+        return `rgb(100,100,0)`
+      } else {
+        let col = (Math.floor(ray.dist * 25) > 225) ? 225 : Math.floor(ray.dist * 25)
+        return `rgb(100,100,${col})`
+      }
+      break
+      case 2:
+      if (ray.dist <= this.minDist) {
+        return `rgb(0,0,0)`
+      } else {
+        let col = (Math.floor(ray.dist * 25) > 255) ? 255 : Math.floor(ray.dist * 25)
+        return `rgb(${col + 15},0,${col})`
+      }
+      break
     }
   }
 
@@ -354,7 +373,7 @@ class Screen {
     const startY = (this.height - height) / 2
     const endX = this.sliceWidth
     const endY = height
-    const color = `rgb(100,100,${this.color(ray.dist)})`
+    const color = this.color(ray)
 
     this.stx.fillStyle = color
     this.stx.fillRect(startX, startY, endX, endY)
