@@ -57,6 +57,8 @@ class App {
       case 68:
         this.player.dir = 1
         break
+      case 82:
+        this.player.toggleRotate()
       case 16:
         this.player.running()
         break
@@ -178,6 +180,7 @@ class Player {
     this.y = 1.5
     this.dir = 0
     this.rot = 0
+    this.rotate = false
     this.size = this.scale / 4
 
     this.speed = 0
@@ -201,6 +204,10 @@ class Player {
     this.moveSpeed = 0.05
   }
 
+  toggleRotate() {
+    this.rotate = !this.rotate
+  }
+
   checkCollision(xx, yy){
     if (xx < 0 || xx > this.mapDim || yy < 0 || yy > this.mapDim) {
       return
@@ -210,6 +217,7 @@ class Player {
       return
     }
 
+    if(this.rotate) { this.rot += 1 * .005 }
     this.x = xx
     this.y = yy
   }
