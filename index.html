@@ -369,18 +369,15 @@ class Screen {
   }
 
   color(ray) {
-    var col
+    var r_a = (Math.sqrt(ray.dist) * 20) / 100
+    if (r_a > 1) r_a = .99
+    if (r_a < .1 ) r_a = .1
     switch (ray.block) {
       case 1:
-        col = (Math.floor(ray.dist + 50) > 225) ? 225 : Math.floor(ray.dist + 50)
-        return `rgb(${col},${col},${col})`
+        return `rgba(100,100,100,${.8 - r_a})`
         break
       case 2:      
-        col = (Math.floor(ray.dist) > 255) ? 255 : Math.floor(ray.dist + 20)
-        let r = (col + 10 < 255) ? col + 45 : 255
-        let b = (col < 255) ? col : 255
-        let g = (col < 255) ? col + 15 : 255
-        return `rgb(0,${col},${col})`
+        return `rgba(0, 80, 80, ${.8 - r_a})`
         break
     }
   }
