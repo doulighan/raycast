@@ -185,7 +185,7 @@ class Player {
 
     this.speed = 0
     this.moveSpeed = 0.07
-    this.rotSpeed = 4 * Math.PI / 180
+    this.rotSpeed = 3.5 * Math.PI / 180
 ;
     this.stripWidth = .05
     this.fov = 80 * (Math.PI / 180)
@@ -369,8 +369,8 @@ class Screen {
   }
 
   color(ray) {
-    var r_a = (Math.sqrt(ray.dist) * 20) / 100
-    if (r_a > 1) r_a = .99 
+    var r_a = (Math.sqrt(ray.dist) * 18) / 100
+    if (r_a > 1) r_a = 1
     if (r_a < .1) r_a = .1
     switch (ray.block) {
       case 1:
@@ -388,6 +388,8 @@ class Screen {
     my_gradient.addColorStop(1,"white")
     this.stx.fillStyle = my_gradient
     this.stx.fillRect(0,0,this.width,this.height/2)
+
+
   }
 
 
