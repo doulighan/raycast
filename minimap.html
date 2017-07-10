@@ -5,18 +5,9 @@
 </head>
 <body>
   <div>
-    <canvas id="screen">
-  </div>
-  <div>
     <canvas id="canvas">
   </div>
-  <div id="info">
-    <div id="FPS"></div>
-    <div id="xPos"></div>
-    <div id="yPos"></div>
-    <div id="rot"></div>
-    <div id="numRays"></div>
-  </div>
+
 <script type="text/javascript">
 
 
@@ -30,7 +21,6 @@ window.onload = function() {
 class App {
   constructor() {
     this.canvas = new Canvas
-    this.screen = new Screen
     this.player = this.canvas.player
 
     this.frameTime
@@ -89,17 +79,6 @@ class App {
     this.lastTime = currTime
   }
 
-  renderInfo() {
-    this.screen.stx.font = '16px serif'
-    this.screen.stx.fillStyle = "black"
-    let degrees = (this.player.rot * (180/Math.PI)) % 360
-    this.screen.stx.fillText("FPS: " + this.frameTime, 5, 16)
-    this.screen.stx.fillText("xPos: " + Math.round(this.player.x * 100) / 100, 5, 32)
-    this.screen.stx.fillText("yPos: " + Math.round(this.player.y * 100) / 100, 5, 48)
-    this.screen.stx.fillText("rot: " + Math.round(degrees * 100) / 100 + '°', 5, 64)
-    this.screen.stx.fillText("numRays: " + this.player.numRays, 5, 80)
-  }
-
 
 }
 
@@ -110,19 +89,19 @@ class Canvas {
 
     this.matrix = ([
       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
       [1, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
-      [1, 2, 2, 2, 2, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 2, 0, 0, 2, 0, 2, 2, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1],
+      [1, 2, 2, 2, 2, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1],
       [1, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
       [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1],
       [1, 0, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1],
@@ -133,7 +112,7 @@ class Canvas {
 
     this.mapDim = this.matrix[0].length
 
-    this.scale = 10
+    this.scale = 30
     this.pixelSize = this.mapDim * this.scale
 
     this.canvas.width = this.pixelSize
@@ -187,7 +166,7 @@ class Player {
     this.moveSpeed = 0.07
     this.rotSpeed = 4 * Math.PI / 180
 ;
-    this.stripWidth = .05
+    this.stripWidth = 15
     this.fov = 80 * (Math.PI / 180)
 
     this.numRays = Math.ceil(this.pixelSize / this.stripWidth)
@@ -343,79 +322,6 @@ class Ray {
   }
 }
 
-class Screen {
-  constructor() {
-    this.screen = document.getElementById('screen')
-    this.stx = this.screen.getContext('2d')
-
-    this.screen.width = 1200
-    this.screen.height = 800
-
-    this.width = this.screen.width
-    this.height = this.screen.height
-
-    this.minDist = 1
-
-    this.rayNum = null
-    this.sliceWidth = null
-  }
-
-  colHeight(dist, angle) {
-    if (dist <= this.minDist) {
-      return this.height
-    } else {
-      return this.height / (Math.sqrt(dist) * Math.cos(angle))
-    }
-  }
-
-  color(ray) {
-    var col
-    switch (ray.block) {
-      case 1:
-        col = (Math.floor(ray.dist + 50) > 225) ? 225 : Math.floor(ray.dist + 50)
-        return `rgb(${col},${col},${col})`
-        break
-      case 2:      
-        col = (Math.floor(ray.dist) > 255) ? 255 : Math.floor(ray.dist + 20)
-        let r = (col + 10 < 255) ? col + 45 : 255
-        let b = (col < 255) ? col : 255
-        let g = (col < 255) ? col + 15 : 255
-        return `rgb(0,${col},${col})`
-        break
-    }
-  }
-
-  drawSky() {
-    var my_gradient = this.stx.createLinearGradient(0,0,0,this.height/2)
-    my_gradient.addColorStop(0,"#ADD8E6")
-    my_gradient.addColorStop(1,"white")
-    this.stx.fillStyle = my_gradient
-    this.stx.fillRect(0,0,this.width,this.height/2)
-  }
-
-
-  render(player, canvas) {
-    this.rayNum = player.rays.length
-    this.sliceWidth = this.width / this.rayNum
-    this.stx.clearRect(0, 0, this.width, this.height)
-    this.drawSky()
-    player.rays.forEach((ray, idx) => this.renderSlice(ray, idx))
-
-  }
-
-  renderSlice(ray, idx) {
-
-    const height = this.colHeight(ray.dist, ray.angle)
-    const startX = idx * this.sliceWidth
-    const startY = (this.height - height) / 2
-    const endX = this.sliceWidth
-    const endY = height
-    const color = this.color(ray)
-
-    this.stx.fillStyle = color
-    this.stx.fillRect(startX, startY, endX, endY)
-  }
-}
 
 </script>
 </body>
