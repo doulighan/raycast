@@ -370,14 +370,14 @@ class Screen {
 
   color(ray) {
     var r_a = (Math.sqrt(ray.dist) * 20) / 100
-    if (r_a > 1) r_a = .99
-    if (r_a < .1 ) r_a = .1
+    if (r_a > 1) r_a = .99 
+    if (r_a < .1) r_a = .1
     switch (ray.block) {
       case 1:
-        return `rgba(100,100,100,${.8 - r_a})`
+        return `rgba(100,100,100,${r_a})`
         break
       case 2:      
-        return `rgba(0, 80, 80, ${.8 - r_a})`
+        return `rgba(0, 80, 80, ${r_a})`
         break
     }
   }
